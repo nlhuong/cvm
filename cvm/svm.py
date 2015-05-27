@@ -1,6 +1,8 @@
 '''
 Implements Support vector methods using the Cascade
 '''
+from __future__ import division
+
 
 import random
 import numpy as np
@@ -8,6 +10,7 @@ from sklearn import svm
 
 from cascade import *
 from model import Model
+
 
 class BaseSVM(Model):
     def train(self, labeledPoints):
@@ -121,7 +124,6 @@ class BaseSVM(Model):
         X = X[np.sort(unique_idx)]
         y = y[np.sort(unique_idx)]
         return X, y
-
 
 
 class SVC(BaseSVM):

@@ -17,8 +17,8 @@ def parseData(line):
 
 if __name__ == "__main__":
     C1 = 100.0
-    gamma1 = 10.0
-    nmax1 = 2000
+    gamma1 = 1.0
+    nmax1 = 20000
 
     if (len(sys.argv) != 1):
         print "Usage: [usb root directory]/spark/bin/spark-submit --driver-memory 2g " + \
@@ -32,14 +32,24 @@ if __name__ == "__main__":
     sc = SparkContext(conf=conf, batchSize=10)
 
     print 'Parsing data'
-    data = sc.textFile('data/covertype/shuffle_scaled_covtype.data').collect()
-   
-    # Split data aproximately into training (60%) and test (40%)
-    keep, throwaway = train_test_split(data, train_size = 0.2, random_state=0)  
-    train, test = train_test_split(keep, train_size = 0.6, random_state=0)    
+    # data = sc.textFile('data/covertype/shuffle_scaled_covtype.data').collect()
+    # keep, throwaway = train_test_split(data, train_size = 0.2, random_state=0)  
 
-    trainRDD = sc.parallelize(train).map(parseData).cache() # filter(filter2classes)
-    testRDD = sc.parallelize(test).map(parseData).cache() # filter(filter2classes).
+    # # Split data aproximately into training (60%) and test (40%)
+    # keep, throwaway = train_test_split(data, train_size = 0.2, random_state=0)  
+    # train, test = train_test_split(keep, train_size = 0.6, random_state=0)    
+    # trainRDD = sc.parallelize(train).map(parseData).cache() # filter(filter2classes)
+    # testRDD = sc.parallelize(test).map(parseData).cache() # filter(filter2classes).
+
+    train = sc.textFile('data/covertype/train.data').collect()
+    train, _ = train_test_split(train, train_size = 0.1, random_state=0)  
+    trainRDD = sc.parallelize(train).map(parseData).cache()
+
+    # test = sc.textFile('data/covertype/test.data').collect()
+    # test, _ = train_test_split(test, train_size = 0.5, random_state=0)  
+    # testRDD = sc.parallelize(test).map(parseData).cache()
+
+    testRDD = sc.textFile('data/covertype/test.data').map(parseData).cache()
 
     print "Size of train set: ", trainRDD.count()
     print "Size of test set: ", testRDD.count()
